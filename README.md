@@ -43,14 +43,14 @@ hw-tdd-rspec/rottenpotatoes`
 3. Run `bundle exec rake db:migrate` to create the development database
 and apply database migrations.
 
-## Travis CI and Coveralls
+## Travis CI 
 
 In this assignment you'll use [Travis](http://travis-ci.org) to
-continuously monitor your test coverage.  If you don't already have a
-free account at Travis, create one; then add your fork of this repo to
-the "watched repos".  You will have to confirm on GitHub that Travis
-should be allowed access to your public repo; this allows Travis to be
-notified when any code pushes occur.
+continuously monitor if your tests are passing.  If you don't already
+have a free account at Travis, create one; then add your fork of this
+repo to the "watched repos".  You will have to confirm on GitHub that
+Travis should be allowed access to your public repo; this allows Travis
+to be notified when any code pushes occur.
 
 The idea behind CI is simple: it can be set up to automatically run
 tasks related to testing and verification each time you push new code.
@@ -59,59 +59,66 @@ For Rails apps that have been set up with Cucumber and RSpec, the tasks
 RSpec tests, respectively.  
 
 1. On the Travis CI website, locate the instructions to add a "Travis CI
-badge" to this 
+badge" to this `README.md` file.  Commit and push the modified
+`README.md` and verify you can see the Travis badge render correctly on
+the front page of your repo.
 
-In this assignment we choose to only monitor
-RSpec test information and coverage since that's what you are graded on,
-but in general 
+2. Take a look at the `.travis.yml` file in this project, which gives
+Travis instructions on what to do each time code is pushed to GitHub.
+Satisfy yourself that you understand the meaning of each directive in
+that file.
 
-4. Run
-these commands to set up the Cucumber directories (under features/) and
-RSpec directories (under spec/) if they don't already exist, allowing
-overwrite of any existing files:
+## Coveralls
 
-```sh
+Test coverage is an important aspect of TDD.  While there are many ways
+to measure it, in this assignment we will use Coveralls, a hosted
+code-analysis service, to report on your test coverage.  
+
+In this assignment we choose to only monitor RSpec test coverage since
+that's what you are graded on, but in general it's possible (and
+desirable) to setup Coveralls to monitor the total coverage of both
+Cucumber and RSpec tests combined.
+
+1. Setup a free account on `coveralls.io`, and add the repo for this
+homework.
+
 rails generate cucumber:install capybara 
 rails generate cucumber_rails_training_wheels:install 
 rails generate rspec:install 
 ```
 
-5) Create a new file called `rspec.rb` in features/support with the
-following contents:
-
-``` require 'rspec/core'
-
-RSpec.configure do |config|
-  config.mock_with :rspec do |c|
-    c.syntax = [:should, :expect] end config.expect_with :rspec do |c|
-    c.syntax = [:should, :expect] end
-end ```
-
-This prevents RSpec from issuing DEPRECATION warnings when it encounters
-deprecated syntax in `features/step_definitions/web_steps`.
-
-6) You can double-check if everything was installed by running the tasks
+1. You can double-check if everything was installed by running the `rake`
+tasks
 `rspec` and `cucumber`.
 
-Since presumably you have no features or specs yet, both tasks should
-execute correctly reporting that there are zero tests to run. Depending
-on your version of rspec, it may also display a message stating that it
-was not able to find any _spec.rb files.
+We have provided some Cucumber scenarios in `features/` and a subset of
+the RSpec tests you'll need in `spec/`.
+
+Your goals will be:
+
+1. Add two features to RottenPotatoes: "User can
+include name of Director with a movie", and "Given a movie with a
+director, user can search for other movies with same director".
+
+2. Using TDD to develop these features, achieve 100\% statement coverage
+of RSpec tests for the features.
 
 **Part 1: add a Director field to Movies**
 
 Create and apply a migration that adds the Director field to the movies
 table.  The director field should be a string containing the name of the
-movie’s director.  HINT: use the [`add_column` method of
+movie's director.  HINT: use the [`add_column` method of
 `ActiveRecord::Migration`](http://apidock.com/rails/ActiveRecord/ConnectionAdapters/SchemaStatements/add_column)
 to do this.
-
-Remember to add `:director` to the list of movie attributes in the `def
-movie_params` method in `movies_controller.rb`.
 
 Remember that once the migration is applied, you also have to do `rake
 db:test:prepare` to load the new post-migration schema into the test
 database!
+
+Remember to add the new `director` attribute to the list of movie
+attributes allowed in `params`, in the `movie_params` method in
+`movies_controller.rb`. 
+
 
 **Part 2: use Acceptance and Unit tests to get new scenarios passing**
 
@@ -140,22 +147,32 @@ the creation of:
 + a RESTful route for Find Similar Movies (HINT: use the 'match' syntax
 for routes as suggested in "Non-Resource-Based Routes" in Section 4.1 of
 ESaaS). You can also use the key :as to specify a name to generate
-helpers (i.e. search_directors_path)
-http://guides.rubyonrails.org/routing.html Note: you probably won’t test
+helpers (i.e. `search_directors_path`)
+http://guides.rubyonrails.org/routing.html 
+
+Note: you probably won't test
 this directly in rspec, but a line in Cucumber or rspec will fail if the
 route is not correct.
 
 + a controller method to receive the click on "Find With Same Director",
-and grab the id (for example) of the movie that is the subject of the
+and grab the `id` (for example) of the movie that is the subject of the
 match (i.e. the one we're trying to find movies similar to)
 
 + a model method in the Movie model to find movies whose director
 matches that of the current movie. Note: This implies that you should
-write at least 2 specs for your controller: 1) When the specified movie
-has a director, it should...  2) When the specified movie has no
-director, it should ... and 2 for your model: 1) it should find movies
-by the same director and 2) it should not find movies by different
-directors.
+write at least 2 specs for your controller: 
+
+1) When the specified movie
+has a director, it should...  
+
+2) When the specified movie has no
+director, it should ... 
+
+and 2 specs for your model: 
+
+1) it should find movies by the same director and 
+
+2) it should not find movies by different directors.
 
 It's up to you to decide whether you want to handle the sad path of "no
 director" in the controller method or in the model method, but you must
