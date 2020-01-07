@@ -12,7 +12,7 @@ Learning Goals
 --------------
 After you complete this assignment, you should be able to:
 
-* Create and run simple Cucumber scenarios to test a new feature 
+* Create and run simple Cucumber scenarios to test a new feature
 
 * Use RSpec to create unit and functional tests that drive the creation
 of app code that lets the Cucumber scenario pass 
@@ -24,30 +24,21 @@ model(s), view(s), and controller(s)
 * Use continuous integration with [Travis](http://travis-ci.org) to
 continuously monitor test coverage and passing status
 
+Specifically, you will add two features to RottenPotatoes: "User can
+include name of Director with a movie", and "Given a movie with a
+director, user can search for other movies with same director".
+You will use TDD to develop these features and achieve 100% statement coverage (C0)
+of RSpec tests for the features.
+
 
 Introduction and Setup
 ----
 
-To get the initial RottenPotatoes code please fork this repo to your
-account and then clone your fork to your
-local machine or C9 workspace.
-
-Once you have the clone of the repo:
-
-1. Change into the `rottenpotatoes` app root directory: `cd
-hw-tdd-rspec/rottenpotatoes` 
-
-2. Run `bundle install
---without production` to make sure all gems are properly installed.  
-
-3. Run `bundle exec rake db:migrate` to create the development database
-and apply database migrations.
-
-## Travis CI 
+## Travis CI: continuous integration and test coverage
 
 In this assignment you'll use [Travis](http://travis-ci.org) to
-continuously monitor if your tests are passing.  If you don't already
-have a free account at Travis, create one; then add your fork of this
+continuously monitor if your tests are passing and what your C0 test coverage is.  If you don't already
+have a free Travis account, create one; then add your fork of this
 repo to the "watched repos".  You will have to confirm on GitHub that
 Travis should be allowed access to your public repo; this allows Travis
 to be notified when any code pushes occur.
@@ -56,7 +47,9 @@ The idea behind CI is simple: it can be set up to automatically run
 tasks related to testing and verification each time you push new code.
 For Rails apps that have been set up with Cucumber and RSpec, the tasks
 `rake cucumber` and `rake rspec` run all of the Cucumber scenarios and
-RSpec tests, respectively.  
+RSpec tests, respectively.  We will also include an additional task 
+that measures test coverage, by tracking which lines of which files in your
+app are actually "touched" by any test code.
 
 1. On the Travis CI website, locate the instructions to add a "Travis CI
 badge" to this `README.md` file.  Commit and push the modified
@@ -68,40 +61,40 @@ Travis instructions on what to do each time code is pushed to GitHub.
 Satisfy yourself that you understand the meaning of each directive in
 that file.
 
-## Coveralls
+In particular, notice the lines that collect test coverage information and send it to CodeClimate, a hosted
+code-analysis service, to report on your test coverage.  To set this up:
 
-Test coverage is an important aspect of TDD.  While there are many ways
-to measure it, in this assignment we will use Coveralls, a hosted
-code-analysis service, to report on your test coverage.  
-
-In this assignment we choose to only monitor RSpec test coverage since
-that's what you are graded on, but in general it's possible (and
-desirable) to setup Coveralls to monitor the total coverage of both
-Cucumber and RSpec tests combined.
-
-1. Setup a free account on `coveralls.io`, and add the repo for this
+1. Setup a free account (we recommend using "Sign In With GitHub") on `codeclimate.com`, and add the repo for this
 homework.
 
+**Part 0: Setup - ensure tests run locally**
+
+Clone this repo to your development environment,  make sure you have the necessary gems installed,
+and do the necessary configuration to install Cucumber and RSpec:
+
+```
+bundle install --without production
+bundle exec rake db:migrate
 rails generate cucumber:install capybara 
 rails generate cucumber_rails_training_wheels:install 
 rails generate rspec:install 
 ```
 
-1. You can double-check if everything was installed by running the `rake`
-tasks
-`rspec` and `cucumber`.
-
+1. You can double-check if everything was installed by running `bundle exec rake rspec` and `bundle exec rake cucumber`.  
+They should pass without any errors.
 We have provided some Cucumber scenarios in `features/` and a subset of
 the RSpec tests you'll need in `spec/`.
 
-Your goals will be:
+1. When you're satisfied that the tests work locally, commit and push all your changes, then head over
+to `travis-ci.org`.  You should see that a build (continuous integration run) has begun; since there are no tests yet,
+it should run very quickly.  In particular, inspect the output to make sure the process of collecting
+test coverage results and sending them to CodeClimate was successful.
 
-1. Add two features to RottenPotatoes: "User can
-include name of Director with a movie", and "Given a movie with a
-director, user can search for other movies with same director".
+1. Finally, check CodeClimate for the results of analyzing both code quality and test coverage on your app.
+For test coverage, you can click on the name of any file in CodeClimate, then click the Code tab, then check the 
+Coverage box.  Lines that were "touched" by some test will be highlighted.
 
-2. Using TDD to develop these features, achieve 100\% statement coverage
-of RSpec tests for the features.
+
 
 **Part 1: add a Director field to Movies**
 
