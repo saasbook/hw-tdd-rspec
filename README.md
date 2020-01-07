@@ -61,11 +61,13 @@ Travis instructions on what to do each time code is pushed to GitHub.
 Satisfy yourself that you understand the meaning of each directive in
 that file.
 
-In particular, notice the lines that collect test coverage information and send it to CodeClimate, a hosted
+1. In particular, notice the lines that collect test coverage information and send it to CodeClimate, a hosted
 code-analysis service, to report on your test coverage.  To set this up:
-
-1. Setup a free account (we recommend using "Sign In With GitHub") on `codeclimate.com`, and add the repo for this
-homework.
+Setup a free account (we recommend using "Sign In With GitHub") on `codeclimate.com`, and add the repo for this
+homework.  Go to the repo's settings in CodeClimate, select the Test Coverage set of options, and
+copy the CodeClimate Test Reporter ID (a long hexadecimal string).  **Copy this string to the `.travis.yml` file** as the value 
+for the global option `CC_TEST_REPORTER_ID`.  **If you don't do this step, Travis will be unable to report 
+test coverage results to CodeClimate.**
 
 **Part 0: Setup - ensure tests run locally**
 
@@ -85,7 +87,20 @@ They should pass without any errors.
 We have provided some Cucumber scenarios in `features/` and a subset of
 the RSpec tests you'll need in `spec/`.
 
-1. When you're satisfied that the tests work locally, commit and push all your changes, then head over
+1. Next, set up test coverage collection.  Add the following code **BEFORE ANYTHING ELSE ON LINE ONE** of both
+`spec/rails_helper.rb` and `features/support/env.rb`:
+
+```ruby 
+require 'simplecov' 
+SimpleCov.start 'rails' 
+```
+
+Now whenever you run `rspec` or `cucumber`, SimpleCov will generate a coverage report
+in a directory named `coverage/`.  SimpleCov can intelligently merge the results, so running
+the tests for Rspec does not overwrite the coverage results from
+SimpleCov and vice versa.  Verify that coverage reporting is working.
+
+1. When you're satisfied that the tests and coverage reporting work locally, commit and push all your changes, then head over
 to `travis-ci.org`.  You should see that a build (continuous integration run) has begun; since there are no tests yet,
 it should run very quickly.  In particular, inspect the output to make sure the process of collecting
 test coverage results and sending them to CodeClimate was successful.
@@ -137,7 +152,7 @@ controller and model specs to drive the creation of the new controller
 and model methods.  At the least, you will need to write tests to drive
 the creation of:
 
-+ a RESTful route for Find Similar Movies (HINT: use the 'match' syntax
+* a RESTful route for Find Similar Movies (HINT: use the 'match' syntax
 for routes as suggested in "Non-Resource-Based Routes" in Section 4.1 of
 ESaaS). You can also use the key :as to specify a name to generate
 helpers (i.e. `search_directors_path`)
@@ -147,19 +162,17 @@ Note: you probably won't test
 this directly in rspec, but a line in Cucumber or rspec will fail if the
 route is not correct.
 
-+ a controller method to receive the click on "Find With Same Director",
+* a controller method to receive the click on "Find With Same Director",
 and grab the `id` (for example) of the movie that is the subject of the
 match (i.e. the one we're trying to find movies similar to)
 
-+ a model method in the Movie model to find movies whose director
+* a model method in the Movie model to find movies whose director
 matches that of the current movie. Note: This implies that you should
 write at least 2 specs for your controller: 
 
-1) When the specified movie
-has a director, it should...  
+1) When the specified movie has a director, it should...  
 
-2) When the specified movie has no
-director, it should ... 
+2) When the specified movie has no director, it should ... 
 
 and 2 specs for your model: 
 
@@ -172,29 +185,7 @@ director" in the controller method or in the model method, but you must
 provide a test for whichever one you do. Remember to include the line
 `require 'rails_helper'` at the top of your *_spec.rb files.
 
-We want you to report your code coverage as well.
-
-Add `gem 'simplecov', :require => false` to the test group of your
-gemfile, then run `bundle install --without production`.
-
-Next, add the following code **BEFORE ANYTHING ELSE ON LINE ONE** of
-spec/rails_helper.rb and features/support/env.rb:
-
-```ruby require 'simplecov' SimpleCov.start 'rails' ```
-**WARNING: THE ABOVE CODE MUST COME BEFORE ALL OTHER CODE** in
-**spec/rails_helper.rb and features/support/env.rb or **YOUR COVERAGE
-**REPORTS WILL BE INACCURATE**
-
-Now when you run `rspec` or `cucumber`, SimpleCov will generate a report
-in a directory named `coverage/`. Since both RSpec and Cucumber are so
-widely used, SimpleCov can intelligently merge the results, so running
-the tests for Rspec does not overwrite the coverage results from
-SimpleCov and vice versa.
-
-To see the results in Cloud9, open /coverage/index.html. You will see
-the code, but click the Run button at the top. This will spin up a web
-server with a link in the console you can click to see your coverage
-report.
+You may find this [RSpec cheat sheet](https://devhints.io/rspec) helpful.
 
 Improve your test coverage by adding unit tests for untested or
 undertested code. Specifically, you can write unit tests for the
