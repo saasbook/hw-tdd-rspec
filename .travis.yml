@@ -1,6 +1,22 @@
 language: ruby
-rvm: 2.3.1
+rvm: 2.7.0
+sudo: false
+cache: bundler
+bundler_args: --without production
+env:
+  global:
+    - CC_TEST_REPORTER_ID=000000000000000000000000000000000000000000000000000000000000
+    - CCTR=/tmp/cc-test-reporter
+before_install:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CCTR
+  - chmod +x $CCTR
+  - $CCTR before-build
 script:
-  - rake db:migrate
-  - rake db:test:prepare
-  - rake rspec
+  - bundle exec rake db:setup
+  - bundle exec rake rspec
+  - $CCTR format-coverage --output coverage/codeclimate.$SUITE.json
+  - bundle exec rake cucumber
+  - $CCTR format-coverage --output coverage/codeclimate.$SUITE.json
+after_script:
+  - $CCTR sum-coverage coverage/codeclimate.*.json | $CCTR upload-coverage
+  - $CCTR after-build --exit-code $TRAVIS_TEST_RESULT
